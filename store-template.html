@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f7;--card:#fff;--ink:#0f1a2b;--muted:#5b6678;--line:#dde2ea;--accent:#2f4bff;--accent-ink:#fff;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;--body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0d121c;--card:#161d2b;--ink:#eef1f6;--muted:#97a1b3;--line:#27324a}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.5 var(--body)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 20px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.quiet{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font:700 1.25rem var(--display);text-decoration:none;color:var(--ink)}
+.cartbtn{display:flex;align-items:center;gap:8px}
+.badge{background:var(--ink);color:var(--bg);border-radius:999px;min-width:22px;height:22px;display:inline-grid;place-items:center;font-size:.8rem;padding:0 6px}
+
+/* hero */
+.hero{padding:72px 0 48px}
+.hero h1{font:700 clamp(2.6rem,9vw,6rem)/.95 var(--display);letter-spacing:-.03em;margin:0;max-width:12ch}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:44ch;margin:20px 0 28px}
+
+/* products */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 16px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;padding-bottom:72px}
+.card{display:flex;flex-direction:column}
+.card .pic{border-radius:18px;overflow:hidden;background:var(--line);aspect-ratio:4/5}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card h3{font:600 1.05rem var(--display);margin:12px 0 2px}
+.card .desc{color:var(--muted);font-size:.9rem;margin:0 0 10px;flex:1}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.price{font-weight:600}
+.buy .btn{padding:8px 16px;font-size:.9rem}
+
+/* cart drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,15,25,.5);opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);z-index:10;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s;visibility:hidden}
+.drawer.open{transform:none;visibility:visible}
+.drawer header{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drawer h2{font:700 1.3rem var(--display);margin:0}
+.items{flex:1;overflow:auto;padding:8px 20px}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.item img{width:64px;height:64px;border-radius:10px;object-fit:cover}
+.item b{display:block;font-weight:600}
+.qty{display:flex;align-items:center;gap:6px;margin-top:4px}
+.qty button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer}
+.foot{padding:18px 20px;border-top:1px solid var(--line)}
+.sub{display:flex;justify-content:space-between;font-weight:600;font-size:1.1rem;margin-bottom:14px}
+.foot .btn{width:100%}
+.muted{color:var(--muted)}
+
+/* dialogs */
+dialog{border:0;border-radius:20px;background:var(--card);color:var(--ink);width:min(460px,92vw);padding:24px}
+dialog::backdrop{background:rgba(10,15,25,.55)}
+dialog h2{font:700 1.4rem var(--display);margin:0 0 6px}
+label{display:block;font-size:.9rem;color:var(--muted);margin:14px 0 4px}
+input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+.row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+textarea{width:100%;height:140px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px;font-size:.85rem;margin-top:12px}
+
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:.9rem}
+@media (prefers-reduced-motion:reduce){.drawer,.scrim{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <a class="logo" href="#" id="logo">Your Store</a>
+  <button class="btn quiet cartbtn" id="openCart" aria-label="Open cart">Cart <span class="badge" id="count" aria-live="polite">0</span></button>
+</div></div>
+
+<section class="hero"><div class="wrap">
+  <h1 id="heroTitle">Your Store</h1>
+  <p id="tagline"></p>
+  <a class="btn" href="#shop">Shop all</a>
+</div></section>
+
+<main class="wrap" id="shop">
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer><div class="wrap" id="footer"></div></footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping cart">
+  <header><h2>Your cart</h2><button class="btn quiet" id="closeCart">Close</button></header>
+  <div class="items" id="items"></div>
+  <div class="foot">
+    <div class="sub"><span>Subtotal</span><span id="subtotal"></span></div>
+    <button class="btn" id="checkout">Checkout</button>
+  </div>
+</aside>
+
+<dialog id="checkDlg">
+  <h2>Checkout</h2>
+  <p class="muted" id="sum" style="margin:0"></p>
+  <label for="cn">Full name</label><input id="cn" autocomplete="name">
+  <label for="ce">Email</label><input id="ce" type="email" autocomplete="email">
+  <label for="cc">Country</label><input id="cc" autocomplete="country-name">
+  <label for="ca">Address</label><input id="ca" autocomplete="street-address">
+  <label for="cz">Zip or postal code</label><input id="cz" autocomplete="postal-code">
+  <div class="row"><button class="btn quiet" id="backBtn">Back to cart</button><button class="btn" id="placeOrder">Place order</button></div>
+</dialog>
+
+<dialog id="doneDlg">
+  <h2>Order ready</h2>
+  <div id="doneBody"></div>
+  <div class="row"><button class="btn quiet" id="closeDone">Close</button></div>
+</dialog>
+
+<script>
+/* ============================================================
+   1. EDIT YOUR STORE HERE
+   ============================================================ */
+const STORE = {
+  name: "Your Store",
+  tagline: "Small-batch goods, made with care. Replace this line with what makes your shop yours.",
+  currency: "CAD",            // CAD, USD, EUR, GBP ...
+  locale: "en-CA",            // controls how prices are written
+  email: "",                  // orders are emailed here, e.g. "orders@yourstore.com"
+  orderEndpoint: "",          // optional: a Formspree (or similar) URL that receives orders directly
+  accent: "#2f4bff"           // button colour
+};
+
+/* ============================================================
+   2. EDIT YOUR PRODUCTS HERE
+   image: a file next to this page (e.g. "images/mug.jpg") or a full web address.
+   Leave image empty ("") to show a coloured placeholder.
+   ============================================================ */
+const PRODUCTS = [
+  { id:"mug",     name:"Ceramic mug",       price:24, category:"Home",        image:"", description:"Hand-glazed, holds 350 ml." },
+  { id:"candle",  name:"Soy candle",        price:18, category:"Home",        image:"", description:"Cedar and sage, 40-hour burn." },
+  { id:"tote",    name:"Linen tote bag",    price:32, category:"Bags",        image:"", description:"Sturdy, washable, fits a laptop." },
+  { id:"notes",   name:"Notebook set",      price:15, category:"Stationery",  image:"", description:"Three dotted notebooks, A5." },
+  { id:"pin",     name:"Enamel pin",        price:9,  category:"Accessories", image:"", description:"Hard enamel with a butterfly clasp." },
+  { id:"tea",     name:"Tea sampler",       price:21, category:"Food & drink",image:"", description:"Five loose-leaf blends, 20 g each." }
+];
+
+/* ============================================================
+   3. STORE ENGINE (you don't need to change anything below)
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const fmt = n => new Intl.NumberFormat(STORE.locale, {style:"currency", currency:STORE.currency}).format(n);
+const tints = ["#c8d3ff","#ffd9c2","#cfe9d9","#f6e3a8","#e0cdf5","#bfe3ea"];
+let cart = {}, filter = "All";
+try { cart = JSON.parse(localStorage.getItem("store-cart") || "{}"); } catch (e) { cart = {}; }
+
+function pic(p, i) {
+  if (p.image) return p.image;
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" fill="' + tints[i % tints.length] +
+    '"/><text x="200" y="300" font-size="190" font-family="Georgia,serif" text-anchor="middle" fill="rgba(15,26,43,.55)">' + p.name.charAt(0) + '</text></svg>';
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+const byId = id => PRODUCTS.find(p => p.id === id);
+const lines = () => Object.keys(cart).filter(id => byId(id)).map(id => ({p: byId(id), q: cart[id]}));
+const total = () => lines().reduce((s, l) => s + l.p.price * l.q, 0);
+const saveCart = () => { try { localStorage.setItem("store-cart", JSON.stringify(cart)); } catch (e) {} };
+
+function renderChips() {
+  const cats = ["All", ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+  const box = $("chips"); box.innerHTML = "";
+  if (cats.length < 3) return;
+  cats.forEach(c => {
+    const b = el("button", "chip", c); b.setAttribute("aria-pressed", c === filter);
+    b.onclick = () => { filter = c; renderChips(); renderProducts(); };
+    box.append(b);
+  });
+}
+function renderProducts() {
+  const g = $("grid"); g.innerHTML = "";
+  PRODUCTS.forEach((p, i) => {
+    if (filter !== "All" && p.category !== filter) return;
+    const c = el("article", "card"), w = el("div", "pic"), im = el("img");
+    im.src = pic(p, i); im.alt = p.name; im.loading = "lazy"; w.append(im);
+    const buy = el("div", "buy"), add = el("button", "btn", "Add to cart");
+    add.onclick = () => { cart[p.id] = (cart[p.id] || 0) + 1; saveCart(); renderCart(); add.textContent = "Added"; setTimeout(() => add.textContent = "Add to cart", 900); };
+    buy.append(el("span", "price", fmt(p.price)), add);
+    c.append(w, el("h3", null, p.name), el("p", "desc", p.description || ""), buy);
+    g.append(c);
+  });
+}
+function renderCart() {
+  const L = lines(), n = L.reduce((s, l) => s + l.q, 0);
+  $("count").textContent = n;
+  const box = $("items"); box.innerHTML = "";
+  if (!L.length) box.append(el("p", "muted", "Your cart is empty. Add something from the shop."));
+  L.forEach(({p, q}) => {
+    const row = el("div", "item"), im = el("img"), mid = el("div"), qty = el("div", "qty");
+    im.src = pic(p, PRODUCTS.indexOf(p)); im.alt = "";
+    const minus = el("button", null, "−"), plus = el("button", null, "+");
+    minus.setAttribute("aria-label", "Remove one " + p.name); plus.setAttribute("aria-label", "Add one " + p.name);
+    minus.onclick = () => { cart[p.id]--; if (cart[p.id] <= 0) delete cart[p.id]; saveCart(); renderCart(); };
+    plus.onclick = () => { cart[p.id]++; saveCart(); renderCart(); };
+    qty.append(minus, el("span", null, q), plus);
+    mid.append(el("b", null, p.name), el("span", "muted", fmt(p.price)), qty);
+    row.append(im, mid, el("span", "price", fmt(p.price * q)));
+    box.append(row);
+  });
+  $("subtotal").textContent = fmt(total());
+  $("checkout").disabled = !L.length;
+}
+function openCart(open) { $("drawer").classList.toggle("open", open); $("scrim").classList.toggle("open", open); }
+$("openCart").onclick = () => openCart(true);
+$("closeCart").onclick = $("scrim").onclick = () => openCart(false);
+document.addEventListener("keydown", e => { if (e.key === "Escape") openCart(false); });
+
+$("checkout").onclick = () => { openCart(false); $("sum").textContent = lines().reduce((s, l) => s + l.q, 0) + " item(s), total " + fmt(total()); $("checkDlg").showModal(); };
+$("backBtn").onclick = () => { $("checkDlg").close(); openCart(true); };
+$("closeDone").onclick = () => $("doneDlg").close();
+
+$("placeOrder").onclick = async () => {
+  const f = {name:$("cn").value.trim(), email:$("ce").value.trim(), country:$("cc").value.trim(), address:$("ca").value.trim(), zip:$("cz").value.trim()};
+  if (Object.values(f).some(v => !v)) { alert("Please fill in your full name, email, country, address and zip code."); return; }
+  const text = "New order\n\n" + lines().map(l => "- " + l.q + " x " + l.p.name + " (" + fmt(l.p.price * l.q) + ")").join("\n") +
+    "\n\nTotal: " + fmt(total()) + "\n\nName: " + f.name + "\nEmail: " + f.email + "\nAddress: " + f.address + "\nZip: " + f.zip + "\nCountry: " + f.country;
+  const btn = $("placeOrder"); let sent = false;
+  if (STORE.orderEndpoint) {
+    btn.disabled = true;
+    try { const r = await fetch(STORE.orderEndpoint, {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify({...f, total:fmt(total()), message:text})}); sent = r.ok; } catch (e) {}
+    btn.disabled = false;
+  }
+  const body = $("doneBody"); body.innerHTML = "";
+  if (sent) {
+    $("doneDlg").querySelector("h2").textContent = "Order sent";
+    body.append(el("p", "muted", "Thank you, " + f.name + ". We have your order and will be in touch at " + f.email + "."));
+  } else {
+    $("doneDlg").querySelector("h2").textContent = "One last step";
+    if (STORE.email) {
+      body.append(el("p", "muted", "Send your order to us by email to finish."));
+      const a = el("a", "btn", "Send order by email");
+      a.href = "mailto:" + STORE.email + "?subject=" + encodeURIComponent("New order from " + f.name) + "&body=" + encodeURIComponent(text);
+      body.append(a, el("p", "muted", "If your email app doesn’t open, copy the details below and send them to " + STORE.email + "."));
+    } else body.append(el("p", "muted", "Copy your order details below and send them to the seller."));
+    const ta = el("textarea"); ta.readOnly = true; ta.value = text; ta.onfocus = () => ta.select(); body.append(ta);
+  }
+  cart = {}; saveCart(); renderCart(); ["cn","ce","cc","ca","cz"].forEach(id => $(id).value = "");
+  $("checkDlg").close(); $("doneDlg").showModal();
+};
+
+/* start up */
+document.title = STORE.name;
+document.documentElement.style.setProperty("--accent", STORE.accent);
+$("logo").textContent = STORE.name; $("heroTitle").textContent = STORE.name; $("tagline").textContent = STORE.tagline;
+$("footer").textContent = "© " + new Date().getFullYear() + " " + STORE.name + (STORE.email ? " · " + STORE.email : "");
+renderChips(); renderProducts(); renderCart();
+</script>
+</body>
+</html>
